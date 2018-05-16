@@ -4,6 +4,7 @@
 
 . Build the sample -> `./gradlew clean build`
 . Run UAA -> `./gradlew -b uaa-server/build.gradle cargoRunLocal`
-. Run the Resource Server -> `./gradlew -b resource-server/build.gradle bootRun`
+. Run the Orders Resource Server -> `./gradlew -b orders-resource-server/build.gradle bootRun`
+. Run the Address Resource Server -> `./gradlew -b address-resource-server/build.gradle bootRun`
 . Run the Client App -> `./gradlew -b client-app/build.gradle bootRun`
 . Go to http://localhost:8080 and login to UAA using credentials *springsec5 / password*

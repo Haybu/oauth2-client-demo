@@ -29,23 +29,23 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @Configuration
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
-	private static final String RESOURCE_ID = "message";
+	private static final String AUDIENCE_ID = "address";
 
 	@Autowired
 	private TokenStore tokenStore;
 
 	@Override
 	public void configure(ResourceServerSecurityConfigurer security) throws Exception {
-		security.resourceId(RESOURCE_ID).tokenStore(tokenStore);
+		security.resourceId(AUDIENCE_ID).tokenStore(this.tokenStore);
 	}
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http
-			.mvcMatcher("/messages/**")
+			.mvcMatcher("/api/**")
 			.authorizeRequests()
-				.mvcMatchers("/messages/**").access("#oauth2.hasScope('message.read') or hasRole('CLIENT') or hasRole('MESSAGING_CLIENT')");
+				.mvcMatchers("/api/v1/addresses/**").access("#oauth2.hasScope('address.validate')");
 		// @formatter:on
 	}
 }

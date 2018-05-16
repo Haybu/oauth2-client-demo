@@ -9,26 +9,28 @@ oauth:
       - approvals.me
       - oauth.approvals
   clients:
-    oauth2login:
+    oidclogin:
       secret: secret
       authorized-grant-types: authorization_code
       scope: openid,profile,email
       authorities: uaa.resource
       redirect-uri: http://localhost:8080/login/oauth2/code/uaa
-    messaging:
+    ordering:
       secret: secret
       authorized-grant-types: authorization_code
-      scope: message.read,message.write
+      scope: order.create,order.list
+      autoapprove: true
       authorities: uaa.resource
-      redirect-uri: http://localhost:8080/messages
-    general-messaging:
+      redirect-uri: http://localhost:8080/orders
+    address:
       secret: secret
       authorized-grant-types: client_credentials
-      authorities: message.read
+      authorities: address.validate
 
 scim:
   users:
-    - springsec5|password|springsec5@pivotal.io|Spring|Security5|uaa.user,profile,email,message.read,message.write
+    - springsec5|password|springsec5@pivotal.io|Spring|Security5|uaa.user,profile,email,order.create,order.list
+    - user1|password|user1@pivotal.io|User1|Pivotal|uaa.user,profile,email
 
 jwt:
   token:

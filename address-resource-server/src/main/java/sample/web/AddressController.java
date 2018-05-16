@@ -13,19 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.oauth2.client.web.http;
+package sample.web;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Joe Grandja
  */
-public interface OAuth2ClientAttributeNames {
+@RestController
+@RequestMapping("/api/v1/addresses")
+public class AddressController {
 
-	String CLIENT_REGISTRATION_REPOSITORY = OAuth2ClientAttributeNames.class.getName() + ".CLIENT_REGISTRATION_REPOSITORY";
-
-	String AUTHORIZED_CLIENT_SERVICE = OAuth2ClientAttributeNames.class.getName() + ".AUTHORIZED_CLIENT_SERVICE";
-
-	String CLIENT_REGISTRATION_IDENTIFIER =  OAuth2ClientAttributeNames.class.getName() + ".CLIENT_REGISTRATION_IDENTIFIER";
-
-	String RESOURCE_OWNER_PRINCIPAL  = OAuth2ClientAttributeNames.class.getName() + ".RESOURCE_OWNER_PRINCIPAL";
-
+	@PostMapping("/validate")
+	public String validateAddress(@RequestBody String address) {
+		return address + " (verified)";
+	}
 }

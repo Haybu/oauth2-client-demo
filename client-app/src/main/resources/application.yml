@@ -16,31 +16,22 @@ spring:
       client:
         registration:
           uaa:
-            client-id: oauth2login
+            client-id: oidclogin
             client-secret: secret
             client-authentication-method: basic
             authorization-grant-type: authorization_code
             redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: openid, profile, email
             client-name: UAA Login
-          messaging:
+          ordering:
             provider: uaa
-            client-id: messaging
+            client-id: ordering
             client-secret: secret
             client-authentication-method: basic
             authorization-grant-type: authorization_code
-            redirect-uri-template: "{baseUrl}/messages"
-            scope: message.read
-            client-name: Messaging Client
-          general-messaging:  # NOTE: This client is used for the client_credentials grant flow
-            provider: uaa
-            client-id: general-messaging
-            client-secret: secret
-            client-authentication-method: basic
-            authorization-grant-type: authorization_code
-            redirect-uri-template: "{baseUrl}/messages"
-            scope: message.read
-            client-name: General Messaging Client
+            redirect-uri-template: "{baseUrl}/orders"
+            scope: order.create, order.list
+            client-name: Ordering Client
         provider:
           uaa:
             authorization-uri: http://localhost:8090/uaa/oauth/authorize
@@ -51,4 +42,4 @@ spring:
 
 oauth2:
   resource:
-    messages-uri: http://localhost:8092/messages
+    orders-uri: http://localhost:8092/api/v1/orders

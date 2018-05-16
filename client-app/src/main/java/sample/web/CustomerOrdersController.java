@@ -15,78 +15,78 @@
  */
 package sample.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.OAuth2Client;
-import org.springframework.security.oauth2.client.web.http.OAuth2ClientAttributeNames;
-import org.springframework.security.oauth2.client.web.http.OAuth2ClientRestTemplateBuilder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import sample.web.model.Order;
 
-import java.net.URI;
 import java.util.List;
 
 /**
  * @author Joe Grandja
  */
 @Controller
-@RequestMapping("/messages")
-public class MessagesController {
+@RequestMapping("/orders")
+public class CustomerOrdersController {
 
-	@Value("${oauth2.resource.messages-uri}")
-	private String messagesUri;
-
-	@Autowired
-	private OAuth2ClientRestTemplateBuilder oauth2ClientRestTemplateBuilder;
+	@Value("${oauth2.resource.orders-uri}")
+	private String ordersUri;
 
 	@GetMapping
-	public String getMessages(@OAuth2Client("messaging") OAuth2AuthorizedClient authorizedClient,
-								Authentication authentication, Model model) {
+	public String getOrders(@OAuth2Client("ordering") OAuth2AuthorizedClient authorizedClient,
+							OAuth2AuthenticationToken authentication,
+							Model model) {
 
-		List messages = WebClient.builder()
+		List<Order> orders = WebClient.builder()
 				.filter(oauth2Credentials(authorizedClient))
 				.build()
 				.get()
-				.uri(this.messagesUri)
+				.uri(this.ordersUri + "/{customerId}", authentication.getName())
+				.accept(MediaType.APPLICATION_JSON)
 				.retrieve()
-				.bodyToMono(List.class)
+				.bodyToFlux(Order.class)
+				.collectList()
 				.block();
-		model.addAttribute("messages", messages);
+		model.addAttribute("orders", orders);
 
-		List<String> generalMessages = this.getGeneralMessages(authentication);
-		model.addAttribute("generalMessages", generalMessages);
+		model.addAttribute("order", new Order());	// Used for binding to a new order
 
-		return "message-list";
+		return "orders";
 	}
 
-	private List<String> getGeneralMessages(Authentication authentication) {
-		String clientRegistrationId = "general-messaging";
+	@PostMapping
+	public String placeOrder(@ModelAttribute Order order,
+								@OAuth2Client("ordering") OAuth2AuthorizedClient authorizedClient,
+								OAuth2AuthenticationToken authentication,
+								Model model) {
 
-		RestTemplate restTemplate = this.oauth2ClientRestTemplateBuilder
-				.requestAttribute(OAuth2ClientAttributeNames.CLIENT_REGISTRATION_IDENTIFIER, clientRegistrationId)
-				.requestAttribute(OAuth2ClientAttributeNames.RESOURCE_OWNER_PRINCIPAL, authentication)
-				.build();
+		order.setCustomerIdentifier(authentication.getName());
 
-		RequestEntity<Void> request = RequestEntity.get(URI.create(this.messagesUri)).build();
+		Order placedOrder = WebClient.builder()
+				.filter(oauth2Credentials(authorizedClient))
+				.build()
+				.post()
+				.uri(this.ordersUri)
+				.contentType(MediaType.APPLICATION_JSON)
+				.syncBody(order)
+				.retrieve()
+				.bodyToMono(Order.class)
+				.block();
 
-		ParameterizedTypeReference<List<String>> responseType = new ParameterizedTypeReference<List<String>>() {};
-
-		ResponseEntity<List<String>> response = restTemplate.exchange(request, responseType);
-
-		return response.getBody();
+		return this.getOrders(authorizedClient, authentication, model);
 	}
 
 	private ExchangeFilterFunction oauth2Credentials(OAuth2AuthorizedClient authorizedClient) {

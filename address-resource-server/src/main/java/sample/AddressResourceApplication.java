@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.security.oauth2.client.web.http;
+package sample;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * @author Joe Grandja
  */
-public interface ClientHttpRequestAttributes {
+@SpringBootApplication
+public class AddressResourceApplication {
 
-	Object getAttribute(String name);
-
-	void setAttribute(String name, Object value);
-
-	void removeAttribute(String name);
-
-	String[] getAttributeNames();
-
+	public static void main(String[] args) {
+		SpringApplication.run(AddressResourceApplication.class, args);
+	}
 }

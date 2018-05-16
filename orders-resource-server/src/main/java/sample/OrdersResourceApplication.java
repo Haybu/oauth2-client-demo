@@ -22,9 +22,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Joe Grandja
  */
 @SpringBootApplication
-public class ResourceServerApplication {
+public class OrdersResourceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ResourceServerApplication.class, args);
+		SpringApplication.run(OrdersResourceApplication.class, args);
 	}
 }

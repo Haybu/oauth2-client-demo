@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Ordering</title>
+	<meta charset="utf-8" />
+</head>
+<body>
+<div th:replace="index::logout"></div>
+<h1>Ordering</h1>
+<div th:unless="${#lists.isEmpty(orders)}">
+	<h2>Placed Orders</h2>
+	<table>
+		<thead>
+		<tr>
+			<th>Date Ordered</th>
+			<th>Product Name</th>
+			<th>Quantity</th>
+			<th>Ship To Address</th>
+			<th>Customer Name</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr th:each="order : ${orders}">
+			<td th:text="${#dates.format(order.orderDate, 'dd/MM/yyyy hh:mm')}">01/01/2018</td>
+			<td th:text="${order.productName}">Product Name</td>
+			<td th:text="${order.quantity}">0</td>
+			<td th:text="${order.shipToAddress}">Shipping Address</td>
+			<td th:text="${order.customerName}">Customer Name</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+<div>
+	<h2>New Order</h2>
+	<form action="#" th:action="@{/orders}" th:object="${order}" method="post">
+		<p>Product Name: <input id="productName" type="text" th:field="*{productName}" /></p>
+		<p>Quantity: <input id="quantity" type="text" th:field="*{quantity}" /></p>
+		<p>Shipping Address: <input id="shipToAddress" type="text" th:field="*{shipToAddress}" /></p>
+		<p>Customer Name: <input id="customerName" type="text" th:field="*{customerName}" /></p>
+		<p><input type="submit" value="Submit" /></p>
+	</form>
+</div>
+<div>
+	<p><a href="/" th:href="@{/}">Home</a></p>
+</div>
+</body>
+</html>

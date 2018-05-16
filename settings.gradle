@@ -1,5 +1,6 @@
 rootProject.name = 'oauth2-client-demo'
 
 include 'client-app'
-include 'resource-server'
+include 'orders-resource-server'
+include 'address-resource-server'
 include 'uaa-server'
